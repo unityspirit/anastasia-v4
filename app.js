@@ -38,7 +38,7 @@ let loadedCount = 0;
 let isReady = false;
 
 function frameName(i) {
-  return `${FRAME_DIR}/frame_${String(i + 1).padStart(6, '0')}.webp`;
+  return `${FRAME_DIR}/frame_${String(i + 1).padStart(6, '0')}.webp?v=2`;
 }
 
 async function loadAllFrames() {
