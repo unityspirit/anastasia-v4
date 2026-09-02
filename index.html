@@ -3,253 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Анастасия Емельянова | Interactive Cinematic Experience</title>
-  <meta name="description" content="Интерактивный кинематографичный формат. Комплексное сопровождение: тренировки, питание.">
+  <title>Анастасия Емельянова | Интерактивное Кино</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Cormorant Garamond', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
   <link rel="stylesheet" href="styles.css">
 </head>
-<body class="bg-black text-white font-sans antialiased overflow-x-hidden">
-
-  <!-- Прелоадер в стиле загрузки киноленты -->
-  <div id="loader" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black transition-opacity duration-1000 text-white">
-    <div class="text-center px-6">
-      <div class="text-[8px] uppercase tracking-[0.5em] mb-4 font-mono text-gray-500">LOADING TAPE...</div>
-      <h2 class="text-4xl font-serif mb-8 font-light italic">Scene 1, Take 1</h2>
-      <div class="w-64 h-1 bg-gray-800 mx-auto overflow-hidden">
-        <div id="progress-bar" class="h-full bg-white w-0 transition-all duration-300"></div>
-      </div>
-    </div>
-  </div>
+<body class="bg-black text-white font-sans antialiased selection:bg-white selection:text-black">
 
   <canvas id="gl-canvas"></canvas>
   <div class="bg-overlay"></div>
 
-  <main id="ui-layer" class="relative z-10 w-full">
-    <div class="stage relative">
+  <!-- Интерактивная невидимая зона для "клика по картинке в видео" -->
+  <!-- В реальном использовании с новым VEO видео, здесь можно расположить абсолютные <a> ссылки, которые точно лягут на руки/телефон Анастасии -->
 
-      <!-- SCENE 1: HERO (SILENT MOVIE TITLE CARD) -->
-      <section class="page flex flex-col justify-center items-center min-h-screen px-4 py-20" id="hero" data-index="0">
-        <!-- Кликабельный элемент на самом видео (hotspot) -->
-        <a href="#philosophy" class="video-hotspot hidden md:flex" style="top: 30%; right: 20%;">
-          Начать
-        </a>
-        
-        <div class="max-w-3xl mx-auto w-full flex justify-center mt-32 md:mt-0 md:justify-start">
-          <div class="silent-movie-card text-center max-w-xl bg-black">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif leading-tight mb-8">
-              Добро пожаловать в пространство, где фитнес это лишь инструмент, а главная цель свобода.
+  <!-- Навигация -->
+  <header class="fixed top-0 left-0 w-full z-40 p-6 flex justify-between items-center pointer-events-none">
+    <div class="pointer-events-auto">
+      <span class="font-serif italic text-2xl drop-shadow-md">A.E.</span>
+    </div>
+    <div class="pointer-events-auto text-sm font-medium uppercase tracking-widest space-x-6 drop-shadow-md hidden md:block">
+      <a href="#philosophy" class="hover:text-gray-300">Пузыри</a>
+      <a href="#programs" class="hover:text-gray-300">Голограммы</a>
+      <a href="#contacts" class="hover:text-gray-300">Смартфон</a>
+    </div>
+  </header>
+
+  <main id="ui-layer" class="relative z-10 w-full">
+    <div class="stage">
+
+      <!-- СЦЕНА 1: HERO (Немое Кино) -->
+      <section class="page flex flex-col justify-center items-center min-h-screen px-4" id="hero" data-index="0">
+        <!-- Позиционируем слева, так как по промпту Анастасия справа -->
+        <div class="w-full max-w-7xl flex justify-start pl-0 md:pl-16">
+          <div class="silent-movie-card max-w-2xl text-center">
+            <h1 class="text-4xl sm:text-6xl font-serif leading-tight mb-6 tracking-wide">
+              Спорт — это не подвиг.
             </h1>
-            <p class="text-sm font-sans tracking-wider text-gray-300 uppercase mb-8">
+            <p class="text-lg sm:text-xl font-light font-serif italic text-gray-300 mb-8">
+              Это возвращение к себе, к естественному ритму дыхания и радости в теле.
+            </p>
+            <div class="w-16 h-px bg-white mx-auto mb-8"></div>
+            <p class="text-xs font-sans uppercase tracking-[0.3em]">
               Анастасия Емельянова
             </p>
-            <div class="flex flex-col gap-4">
-              <button onclick="openBookingModal('Диагностика')" class="border border-white py-3 px-8 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors">
-                Войти в сюжет
-              </button>
-            </div>
           </div>
         </div>
       </section>
 
-      <!-- SCENE 2: PHILOSOPHY (COMIC BUBBLES) -->
-      <section class="page flex flex-col justify-center min-h-screen px-4 py-20" id="philosophy" data-index="1">
-        <div class="max-w-6xl mx-auto w-full relative min-h-[70vh]">
+      <!-- СЦЕНА 2: ФИЛОСОФИЯ (Комикс-пузыри) -->
+      <section class="page flex flex-col justify-center min-h-screen px-4 relative overflow-hidden" id="philosophy" data-index="1">
+        <div class="max-w-7xl mx-auto w-full h-[80vh] relative">
           
-          <h2 class="absolute top-0 left-4 text-xs font-mono text-gray-400 uppercase tracking-widest">Scene: Philosophy</h2>
-
-          <!-- Пузыри диалогов, раскиданные по экрану -->
-          <div class="absolute top-[10%] left-[5%] md:left-[10%] max-w-[280px]">
-            <div class="comic-bubble">
-              <span class="block text-xs font-black uppercase text-gray-500 mb-2">1. Тело</span>
-              <p class="text-sm font-medium leading-relaxed">
-                Как заставить мышцы расти и укрепить рельеф, не убивая суставы и связки.
-              </p>
-            </div>
+          <!-- Пузырь 1 (Верхний левый) -->
+          <div class="comic-bubble absolute top-10 left-4 sm:left-10 max-w-xs">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-widest block mb-2">01. Тело</span>
+            <p class="text-sm font-medium">Как заставить мышцы расти и укрепить рельеф, не убивая суставы.</p>
           </div>
 
-          <div class="absolute top-[30%] right-[5%] md:right-[15%] max-w-[280px]">
-            <div class="comic-bubble right-tail">
-              <span class="block text-xs font-black uppercase text-gray-500 mb-2">2. Еда</span>
-              <p class="text-sm font-medium leading-relaxed">
-                Как есть вкусно, разнообразно и не слетать в «зажор» на каждых выходных.
-              </p>
-            </div>
+          <!-- Пузырь 2 (Средний правый) -->
+          <div class="comic-bubble right-tail absolute top-1/3 right-4 sm:right-10 max-w-xs">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-widest block mb-2">02. Еда</span>
+            <p class="text-sm font-medium">Как есть вкусно, разнообразно и не слетать в «зажор» на каждых выходных.</p>
           </div>
 
-          <div class="absolute bottom-[25%] left-[5%] md:left-[20%] max-w-[280px]">
-            <div class="comic-bubble">
-              <span class="block text-xs font-black uppercase text-gray-500 mb-2">3. Голова</span>
-              <p class="text-sm font-medium leading-relaxed">
-                Почему мы срываемся и как экстренно собраться, когда всё идёт не по плану.
-              </p>
-            </div>
+          <!-- Пузырь 3 (Нижний левый) -->
+          <div class="comic-bubble absolute bottom-1/4 left-4 sm:left-20 max-w-xs">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-widest block mb-2">03. Голова</span>
+            <p class="text-sm font-medium">Почему мы срываемся и как экстренно собраться, когда всё идёт не по плану.</p>
           </div>
 
-          <div class="absolute bottom-[5%] right-[5%] md:right-[10%] max-w-[280px]">
-            <div class="comic-bubble right-tail">
-              <span class="block text-xs font-black uppercase text-gray-500 mb-2">4. Дисциплина</span>
-              <p class="text-sm font-medium leading-relaxed">
-                Не через кнут, насилие и слёзы, а через понятную, бережную и устойчивую систему.
-              </p>
-            </div>
+          <!-- Пузырь 4 (Верхний правый, чуть ниже) -->
+          <div class="comic-bubble right-tail absolute bottom-10 right-4 sm:right-20 max-w-xs">
+            <span class="text-gray-400 text-[10px] uppercase font-bold tracking-widest block mb-2">04. Дисциплина</span>
+            <p class="text-sm font-medium">Не через кнут и насилие, а через понятную, бережную систему.</p>
           </div>
 
         </div>
       </section>
 
-      <!-- SCENE 3: TARIFFS (VISUAL NOVEL WINDOWS) -->
-      <section class="page flex flex-col justify-center items-center min-h-screen px-4 py-20" id="programs" data-index="2">
-        <div class="max-w-7xl mx-auto w-full">
+      <!-- СЦЕНА 3: ПРОГРАММЫ (Голографические окна) -->
+      <section class="page flex flex-col justify-center items-center min-h-screen px-4 py-32" id="programs" data-index="2">
+        <div class="max-w-6xl mx-auto w-full">
           
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-5xl font-serif text-white drop-shadow-lg">Форматы работы</h2>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-20">
             
-            <div class="vn-window">
-              <h3 class="text-xl font-serif italic text-white mb-2">VIP Комплекс</h3>
-              <p class="text-xs text-gray-400 mb-6">Онлайн тренировки + питание</p>
-              <ul class="text-sm text-gray-200 space-y-2 mb-8">
-                <li>• Тренировки по видеосвязи</li>
-                <li>• Контроль меню</li>
-                <li>• Разбор срывов</li>
-              </ul>
-              <div class="flex justify-between items-center border-t border-gray-600 pt-4">
-                <span class="font-mono text-lg">32.000 ₽</span>
-                <button onclick="openBookingModal('VIP Комплекс (32.000 ₽)')" class="bg-white text-black px-4 py-2 text-xs font-bold hover:bg-gray-200">Выбрать</button>
+            <!-- Окно 1 -->
+            <div class="hologram-window p-8 flex flex-col justify-between h-full">
+              <div>
+                <h3 class="text-xl font-bold mb-4">VIP Комплекс</h3>
+                <p class="text-xs text-gray-200 mb-6 leading-relaxed">
+                  Полное сопровождение: онлайн тренировки, составление меню, работа с психологией 24/7.
+                </p>
+              </div>
+              <div>
+                <div class="text-2xl font-serif mb-4">32 000 ₽</div>
+                <button onclick="openBookingModal('VIP Комплекс')" class="w-full py-3 bg-white text-black text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-gray-200 transition">Выбрать</button>
               </div>
             </div>
 
-            <div class="vn-window" style="transition-delay: 0.2s">
-              <h3 class="text-xl font-serif italic text-white mb-2">Комплекс</h3>
-              <p class="text-xs text-gray-400 mb-6">Питание + психология</p>
-              <ul class="text-sm text-gray-200 space-y-2 mb-8">
-                <li>• Питание и меню</li>
-                <li>• Разбор срывов</li>
-                <li>• Без онлайн занятий</li>
-              </ul>
-              <div class="flex justify-between items-center border-t border-gray-600 pt-4">
-                <span class="font-mono text-lg">20.000 ₽</span>
-                <button onclick="openBookingModal('Комплекс (20.000 ₽)')" class="bg-white text-black px-4 py-2 text-xs font-bold hover:bg-gray-200">Выбрать</button>
+            <!-- Окно 2 -->
+            <div class="hologram-window p-8 flex flex-col justify-between h-full mt-0 md:mt-12">
+              <div>
+                <h3 class="text-xl font-bold mb-4">Комплекс</h3>
+                <p class="text-xs text-gray-200 mb-6 leading-relaxed">
+                  Глубина работы по питанию и психологии, разбор срывов. Тренировки вы делаете самостоятельно.
+                </p>
+              </div>
+              <div>
+                <div class="text-2xl font-serif mb-4">20 000 ₽</div>
+                <button onclick="openBookingModal('Комплекс')" class="w-full py-3 bg-white/20 text-white border border-white/50 text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-white hover:text-black transition">Выбрать</button>
               </div>
             </div>
 
-            <div class="vn-window" style="transition-delay: 0.4s">
-              <h3 class="text-xl font-serif italic text-white mb-2">Тренировки</h3>
-              <p class="text-xs text-gray-400 mb-6">Только онлайн-занятия</p>
-              <ul class="text-sm text-gray-200 space-y-2 mb-8">
-                <li>• 8 занятий в месяц</li>
-                <li>• Контроль техники</li>
-                <li>• Подбор нагрузки</li>
-              </ul>
-              <div class="flex justify-between items-center border-t border-gray-600 pt-4">
-                <span class="font-mono text-lg">15.000 ₽</span>
-                <button onclick="openBookingModal('Онлайн тренировки (15.000 ₽)')" class="bg-white text-black px-4 py-2 text-xs font-bold hover:bg-gray-200">Выбрать</button>
+            <!-- Окно 3 -->
+            <div class="hologram-window p-8 flex flex-col justify-between h-full">
+              <div>
+                <h3 class="text-xl font-bold mb-4">Видео тренировки</h3>
+                <p class="text-xs text-gray-200 mb-6 leading-relaxed">
+                  4 тренировки в записи навсегда. Идеально для старта и проверки формата.
+                </p>
+              </div>
+              <div>
+                <div class="text-2xl font-serif mb-4">999 ₽</div>
+                <button onclick="openBookingModal('Видео')" class="w-full py-3 bg-white/20 text-white border border-white/50 text-xs font-bold uppercase tracking-widest rounded-lg hover:bg-white hover:text-black transition">Купить</button>
               </div>
             </div>
 
           </div>
-
-          <!-- Video Record Block like a Command Prompt -->
-          <div class="mt-10 mx-auto max-w-2xl bg-black border border-gray-800 p-6 font-mono text-sm text-green-500">
-             > init module: "Видео тренировки в записи"<br>
-             > status: 4 тренировки (доступ навсегда)<br>
-             > price: 999 ₽<br>
-             > action: <button onclick="openPaymentModal('Видео тренировки', 999)" class="underline hover:text-white">execute_purchase()</button>
-          </div>
-
         </div>
       </section>
 
 
-      <!-- SCENE 4: CONTACTS (SMARTPHONE UI OVERLAY) -->
-      <section class="page flex flex-col justify-end items-center min-h-screen" id="contact" data-index="3">
-        <!-- Кликабельный хотспот на уровне головы (в видео) -->
-        <a onclick="openBookingModal('Диагностика')" class="video-hotspot hidden md:flex" style="top: 20%; left: 30%;">
-          Оставить заявку
-        </a>
+      <!-- СЦЕНА 4: КОНТАКТЫ (Интерактивный смартфон) -->
+      <section class="page flex flex-col justify-end items-center min-h-screen px-4 pb-0 pt-20" id="contacts" data-index="3">
+        <div class="w-full max-w-md text-center mb-8">
+          <h2 class="text-3xl font-serif drop-shadow-lg mb-2">Связь со мной</h2>
+          <p class="text-sm font-light text-gray-300 drop-shadow">Выберите удобный мессенджер в телефоне ниже</p>
+        </div>
 
-        <!-- CSS Смартфон, выезжающий снизу -->
-        <div class="smartphone-container relative">
-          <div class="smartphone-notch"></div>
+        <!-- Кликабельный интерфейс телефона -->
+        <div class="phone-mockup flex flex-col">
+          <div class="phone-notch"></div>
           
-          <div class="smartphone-screen">
-            <h4 class="text-xl font-black mb-1">Контакты</h4>
-            <p class="text-xs text-gray-500 mb-6">Свяжитесь со мной напрямую</p>
+          <!-- Обои телефона -->
+          <div class="flex-1 bg-gradient-to-b from-gray-100 to-gray-300 pt-16 px-6">
+            
+            <div class="text-black text-center mb-8">
+              <p class="text-4xl font-light tracking-tighter mb-1">14:41</p>
+              <p class="text-xs text-gray-500 uppercase tracking-widest">Вторник, 2 Сентября</p>
+            </div>
 
-            <a href="https://t.me/AnastasiaEmelyanova" target="_blank" class="app-icon">
-              <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">T</div>
-              <div>
-                <span class="block text-sm">Telegram</span>
-                <span class="block text-xs text-gray-500 font-normal">@AnastasiaEmelyanova</span>
-              </div>
-            </a>
+            <!-- Иконки-приложения -->
+            <div class="grid grid-cols-4 gap-4 mt-8">
+              
+              <a href="https://t.me/AnastasiaEmelyanova" target="_blank" class="flex flex-col items-center group text-decoration-none">
+                <div class="phone-app-icon icon-telegram">
+                  <svg class="w-8 h-8 text-white ml-[-2px]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.87 4.326-2.962-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.94z"/></svg>
+                </div>
+                <span class="text-[10px] text-black mt-2 font-medium">Telegram</span>
+              </a>
 
-            <a href="https://wa.me/79774162517" target="_blank" class="app-icon">
-              <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">W</div>
-              <div>
-                <span class="block text-sm">WhatsApp</span>
-                <span class="block text-xs text-gray-500 font-normal">+7 977 416-25-17</span>
-              </div>
-            </a>
+              <a href="https://wa.me/79774162517" target="_blank" class="flex flex-col items-center group text-decoration-none">
+                <div class="phone-app-icon icon-whatsapp">
+                  <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                </div>
+                <span class="text-[10px] text-black mt-2 font-medium">WhatsApp</span>
+              </a>
 
-            <button onclick="openBookingModal('Оставить заявку')" class="mt-auto bg-black text-white py-4 rounded-xl font-bold uppercase text-xs tracking-widest hover:bg-gray-800 transition">
-              Оставить заявку на сайте
-            </button>
-            <div class="w-1/3 h-1 bg-black mx-auto mt-6 rounded-full opacity-30"></div>
+              <a href="tel:+79774162517" class="flex flex-col items-center group text-decoration-none">
+                <div class="phone-app-icon icon-phone">
+                  <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.4-1.2-.6-2.4-.6-3.6 0-.6-.4-1-1-1H3.5c-.6 0-1 .4-1 1C2.5 13.7 10.3 21.5 20 21.5c.6 0 1-.4 1-1V16.5c0-.5-.4-1-1-1z"/></svg>
+                </div>
+                <span class="text-[10px] text-black mt-2 font-medium">Телефон</span>
+              </a>
+
+            </div>
+
+            <div class="mt-12 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <p class="text-xs text-black font-medium mb-1">Новое уведомление</p>
+              <p class="text-[10px] text-gray-500">Запишитесь на бесплатную диагностику!</p>
+            </div>
+
           </div>
+          
+          <!-- Home Indicator -->
+          <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-400 rounded-full"></div>
         </div>
       </section>
 
     </div>
   </main>
-
-  <!-- Модальные окна (Стилизация под системные окна) -->
-  <div id="booking-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-gray-900 p-8 rounded-none border border-gray-700 max-w-md w-full relative shadow-2xl">
-      <button onclick="closeBookingModal()" class="absolute top-4 right-6 text-gray-500 hover:text-white text-2xl font-mono">[X]</button>
-      
-      <h3 class="text-2xl font-serif text-white mb-2" id="modal-title">Системное сообщение</h3>
-      <p class="text-xs text-gray-400 mb-6 font-mono">> Запись на диагностику</p>
-      
-      <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="space-y-4">
-        <input type="hidden" id="form-tariff" name="tariff" value="Консультация">
-        <div>
-          <input type="text" id="client-name" required placeholder="Ваше имя" class="w-full px-4 py-3 bg-black border border-gray-700 text-sm font-mono text-white placeholder-gray-600 focus:outline-none focus:border-white">
-        </div>
-        <div>
-          <input type="text" id="client-contact" required placeholder="Telegram или Телефон" class="w-full px-4 py-3 bg-black border border-gray-700 text-sm font-mono text-white placeholder-gray-600 focus:outline-none focus:border-white">
-        </div>
-        <button type="submit" class="w-full py-4 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-gray-300">
-          Отправить данные
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <div id="payment-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity">
-    <div class="bg-gray-900 p-8 rounded-none border border-gray-700 max-w-md w-full relative shadow-2xl">
-      <button onclick="closePaymentModal()" class="absolute top-4 right-6 text-gray-500 hover:text-white text-2xl font-mono">[X]</button>
-      
-      <h3 class="text-2xl font-serif text-white mb-2" id="pay-title">Оплата доступа</h3>
-      <p class="text-xs text-gray-400 mb-6 font-mono">> Видео тренировки в записи</p>
-      
-      <form id="payment-form" onsubmit="handlePaymentSubmit(event)" class="space-y-4">
-        <div>
-          <input type="email" id="pay-email" required placeholder="Ваш Email" class="w-full px-4 py-3 bg-black border border-gray-700 text-sm font-mono text-white placeholder-gray-600 focus:outline-none focus:border-white">
-        </div>
-        <div>
-          <input type="text" id="pay-name" required placeholder="Ваше имя" class="w-full px-4 py-3 bg-black border border-gray-700 text-sm font-mono text-white placeholder-gray-600 focus:outline-none focus:border-white">
-        </div>
-        
-        <button type="submit" class="w-full py-4 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-gray-300">
-          Подтвердить (999 ₽)
-        </button>
-      </form>
-    </div>
-  </div>
 
   <script src="app.js"></script>
 </body>
